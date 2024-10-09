@@ -1,5 +1,5 @@
 
-from typing import List
+from typing import List, Dict
 from pathlib import Path
 
 from osvutils.utils.misc import load_osv_file, get_ecosystems
@@ -60,3 +60,29 @@ class OSVDataLoader:
             print(f"{ecosystem_path} not found")
 
         return []
+
+    def get_osv_with_cve_ids(self, ecosystems: List[str] = None) -> Dict[str, OSV]:
+        """
+            Get all the OSV records that have CVE aliases or CVE IDs.
+
+        :param ecosystems: List of ecosystems to filter the records by.
+
+        :return:
+        """
+        cve_ids = {}
+
+        for ecosystem, records in self.records.items():
+            if ecosystems and ecosystem not in ecosystems:
+                continue
+
+            for record in records.values():
+                if record.is_cve_id():
+                    # TODO: check for duplicates to know if that could be an issue
+                    cve_ids[record.id] = record
+                elif record.has_cve_id():
+                    for alias in record.aliases:
+                        if alias.is_cve():
+                            cve_ids[alias.value] = record
+                            break
+
+        return cve_ids

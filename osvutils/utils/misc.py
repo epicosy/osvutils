@@ -27,10 +27,11 @@ def load_osv_file(path: Path) -> dict:
 
 def get_ecosystems(ecosystems: list = None) -> List[EcosystemType]:
     ecosystem_list = []
+    ecosystem_types = [ecosystem.value for ecosystem in EcosystemType]
 
     if ecosystems:
         for ecosystem in ecosystems:
-            if ecosystem not in EcosystemType.__members__:
+            if ecosystem not in ecosystem_types:
                 print(f"Invalid ecosystem: {ecosystem}")
                 continue
 
