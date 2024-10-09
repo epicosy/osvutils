@@ -63,7 +63,7 @@ class OSV(BaseModel):
     aliases: Optional[List[Alias]] = None
     related: Optional[List[str]] = None
     summary: Optional[str] = None
-    details: str
+    details: Optional[str] = None
     severity: Optional[List[Severity]] = None
     affected: Optional[List[Affected]] = None
     references: Optional[List[Reference]] = None
