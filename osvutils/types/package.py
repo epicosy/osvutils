@@ -20,7 +20,7 @@ class Package(BaseModel):
         """
         if isinstance(v, str):
             # Split input like 'AlmaLinux:8' into ('AlmaLinux', '8')
-            match = re.match(r'(\w+):(\d+)', v)
+            match = re.match(r'(\w+):(\w+)', v)
             if match:
                 ecosystem_name, version = match.groups()
                 try:
