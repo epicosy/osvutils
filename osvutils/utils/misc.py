@@ -46,11 +46,11 @@ def get_ecosystems(ecosystems: list = None) -> List[EcosystemType]:
 
 
 def get_alias_type(value: str) -> AliasType:
-    if re.match(CVE_REGEX, value):
+    if re.search(CVE_REGEX, value):
         return AliasType.CVE
 
     return AliasType.Other
 
 
 def is_cve_id(value: str) -> bool:
-    return re.match(CVE_REGEX, value) is not None
+    return re.search(CVE_REGEX, value) is not None
