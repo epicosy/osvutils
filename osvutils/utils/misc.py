@@ -7,7 +7,7 @@ from pathlib import Path
 from osvutils.types.alias import AliasType
 from osvutils.types.ecosystem import EcosystemType
 
-CVE_REGEX = r'^CVE-\d{4}-\d{4,7}$'
+CVE_REGEX = r'CVE-\d{4}-\d{4,7}'
 
 
 def load_osv_file(path: Path) -> dict:
