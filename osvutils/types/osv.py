@@ -2,42 +2,12 @@ from datetime import datetime
 from pydantic import BaseModel, field_validator, Field
 from typing import List, Optional
 
-from osvutils.types.package import Package
 from osvutils.types.alias import Alias
+from osvutils.types.severity import Severity
 from osvutils.types.reference import Reference
+from osvutils.types.affected import Affected
+
 from osvutils.utils.misc import get_alias_type, is_cve_id, get_cve_match
-
-
-# Severity model
-class Severity(BaseModel):
-    type: str
-    score: str
-
-
-# Event model
-class Event(BaseModel):
-    introduced: Optional[str] = None
-    fixed: Optional[str] = None
-    last_affected: Optional[str] = None
-    limit: Optional[str] = None
-
-
-# Range model
-class Range(BaseModel):
-    type: str
-    events: List[Event]
-    repo: Optional[str] = None
-    database_specific: Optional[dict] = None  # Adjust according to your needs
-
-
-# Affected model
-class Affected(BaseModel):
-    package: Optional[Package] = None
-    severity: Optional[List[Severity]] = None
-    ranges: Optional[List[Range]] = None
-    versions: Optional[List[str]] = None
-    ecosystem_specific: Optional[dict] = None  # Adjust according to your needs
-    database_specific: Optional[dict] = None  # Adjust according to your needs
 
 
 # Credit model
@@ -60,7 +30,10 @@ class OSV(BaseModel):
     summary: Optional[str] = None
     details: Optional[str] = None
     severity: Optional[List[Severity]] = None
-    affected: Optional[List[Affected]] = None
+    affected: Optional[List[Affected]] = Field(
+        default=None,
+        description="List of affected objects with package details, severity, ranges, etc."
+    )
     references: Optional[List[Reference]] = Field(
         default=None,
         description="List of reference objects or None"
@@ -108,5 +81,14 @@ class OSV(BaseModel):
     def has_fix_refs(self) -> bool:
         if self.has_references():
             return any(ref.is_fix() for ref in self.references)
+
+        return False
+
+    def has_affected(self) -> bool:
+        return self.affected and len(self.affected) > 0
+
+    def has_git_ranges(self) -> bool:
+        if self.has_affected():
+            return any(affected.has_git_ranges() for affected in self.affected)
 
         return False

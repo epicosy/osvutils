@@ -61,12 +61,14 @@ class OSVDataLoader:
 
         return []
 
-    def get_osv_with_cve_ids(self, ecosystems: List[str] = None, has_fix_refs: bool = False) -> Dict[str, OSV]:
+    def get_osv_with_cve_ids(self, ecosystems: List[str] = None, has_fix_refs: bool = False,
+                             has_git_repo: bool = False) -> Dict[str, OSV]:
         """
             Get all the OSV records that have CVE aliases or CVE IDs.
 
         :param ecosystems: List of ecosystems to filter the records by.
         :param has_fix_refs: When True, includes only the records that have fix references.
+        :param has_git_repo: When True, includes only the records that have a Git repository.
 
         :return:
         """
@@ -82,6 +84,9 @@ class OSVDataLoader:
 
                 if cve_id is not None:
                     if has_fix_refs and not record.has_fix_refs():
+                        continue
+
+                    if has_git_repo and not record.has_git_ranges():
                         continue
 
                     cve_ids[cve_id] = record
