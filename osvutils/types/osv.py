@@ -1,10 +1,11 @@
 from datetime import datetime
-from pydantic import BaseModel, field_validator
+from pydantic import BaseModel, field_validator, Field
 from typing import List, Optional
 
 from osvutils.types.package import Package
 from osvutils.types.alias import Alias
-from osvutils.utils.misc import get_alias_type, is_cve_id
+from osvutils.types.reference import Reference
+from osvutils.utils.misc import get_alias_type, is_cve_id, get_cve_match
 
 
 # Severity model
@@ -39,12 +40,6 @@ class Affected(BaseModel):
     database_specific: Optional[dict] = None  # Adjust according to your needs
 
 
-# Reference model
-class Reference(BaseModel):
-    type: str
-    url: str
-
-
 # Credit model
 class Credit(BaseModel):
     name: str
@@ -66,7 +61,10 @@ class OSV(BaseModel):
     details: Optional[str] = None
     severity: Optional[List[Severity]] = None
     affected: Optional[List[Affected]] = None
-    references: Optional[List[Reference]] = None
+    references: Optional[List[Reference]] = Field(
+        default=None,
+        description="List of reference objects or None"
+    )
     credits: Optional[List[Credit]] = None
     database_specific: Optional[dict] = None  # TODO: to be extended for each database
 
@@ -89,3 +87,26 @@ class OSV(BaseModel):
 
     def is_cve_id(self) -> bool:
         return is_cve_id(self.id)
+
+    def get_cve_id(self) -> Optional[str]:
+        # TODO: temporary solution, there should be a flag or variable to indicate/store the matched cve_id
+        cve_id = get_cve_match(self.id)
+
+        if cve_id:
+            return cve_id
+
+        if self.has_aliases():
+            for alias in self.aliases:
+                if alias.is_cve():
+                    return alias.value
+
+        return None
+
+    def has_references(self) -> bool:
+        return self.references and len(self.references) > 0
+
+    def has_fix_refs(self) -> bool:
+        if self.has_references():
+            return any(ref.is_fix() for ref in self.references)
+
+        return False

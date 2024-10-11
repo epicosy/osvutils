@@ -54,3 +54,8 @@ def get_alias_type(value: str) -> AliasType:
 
 def is_cve_id(value: str) -> bool:
     return re.search(CVE_REGEX, value) is not None
+
+
+def get_cve_match(value: str) -> str | None:
+    match = re.search(CVE_REGEX, value)
+    return match.group() if match else None

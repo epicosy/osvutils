@@ -1,6 +1,7 @@
 
-from typing import List, Dict
+from tqdm import tqdm
 from pathlib import Path
+from typing import List, Dict
 
 from osvutils.utils.misc import load_osv_file, get_ecosystems
 from osvutils.types.osv import OSV
@@ -31,7 +32,7 @@ class OSVDataLoader:
             Main entry point for loading the OSV records.
         """
 
-        for ecosystem in get_ecosystems(ecosystems):
+        for ecosystem in tqdm(get_ecosystems(ecosystems), desc="Loading ecosystems"):
             self._process_ecosystem(ecosystem.value)
 
     def _process_ecosystem(self, ecosystem: str):
@@ -41,7 +42,7 @@ class OSVDataLoader:
             if ecosystem not in self.records:
                 self.records[ecosystem] = {}
 
-            for file in ecosystem_files:
+            for file in tqdm(ecosystem_files, desc=f"Loading {ecosystem} entries", leave=False):
                 if file.suffix != '.json':
                     continue
 
@@ -53,7 +54,6 @@ class OSVDataLoader:
         ecosystem_path = self.data_path / ecosystem
 
         if ecosystem_path.exists():
-            print(f"Loading {ecosystem} data...")
             return list(ecosystem_path.iterdir())
 
         if self.verbose:
@@ -61,28 +61,29 @@ class OSVDataLoader:
 
         return []
 
-    def get_osv_with_cve_ids(self, ecosystems: List[str] = None) -> Dict[str, OSV]:
+    def get_osv_with_cve_ids(self, ecosystems: List[str] = None, has_fix_refs: bool = False) -> Dict[str, OSV]:
         """
             Get all the OSV records that have CVE aliases or CVE IDs.
 
         :param ecosystems: List of ecosystems to filter the records by.
+        :param has_fix_refs: When True, includes only the records that have fix references.
 
         :return:
         """
+        # TODO: add this as an option, so it performs the filtering on when the records are loaded
         cve_ids = {}
 
-        for ecosystem, records in self.records.items():
+        for ecosystem, records in tqdm(self.records.items()):
             if ecosystems and ecosystem not in ecosystems:
                 continue
 
             for record in records.values():
-                if record.is_cve_id():
-                    # TODO: check for duplicates to know if that could be an issue
-                    cve_ids[record.id] = record
-                elif record.has_cve_id():
-                    for alias in record.aliases:
-                        if alias.is_cve():
-                            cve_ids[alias.value] = record
-                            break
+                cve_id = record.get_cve_id()
+
+                if cve_id is not None:
+                    if has_fix_refs and not record.has_fix_refs():
+                        continue
+
+                    cve_ids[cve_id] = record
 
         return cve_ids
