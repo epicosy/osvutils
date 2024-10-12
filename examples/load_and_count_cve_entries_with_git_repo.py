@@ -1,10 +1,21 @@
 from osvutils.core.loader import OSVDataLoader
+from osvutils.core.filters.loader import LoaderFilters
+from osvutils.core.filters.database import DatabaseFilter
+from osvutils.core.filters.affected_packages import AffectedPackagesFilter
 
 
-loader = OSVDataLoader()
+loader = OSVDataLoader(
+    ecosystems=['Debian'],
+    filters=LoaderFilters(
+        database_filter=DatabaseFilter(
+            prefix_is_cve=True
+        ),
+        affected_packages_filter=AffectedPackagesFilter(
+            has_git_ranges=True
+        )
+    )
+)
 
 loader()
 
-cve_ids_osv = loader.get_osv_with_cve_ids(has_git_repo=True)
-
-print(f"{len(cve_ids_osv)} CVE IDs with Git repository in {len(loader)} records")
+print(f"{len(loader)} records loaded")

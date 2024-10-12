@@ -1,10 +1,21 @@
 from osvutils.core.loader import OSVDataLoader
+from osvutils.core.filters.loader import LoaderFilters
+from osvutils.core.filters.database import DatabaseFilter
+from osvutils.core.filters.references import ReferencesFilter
 
 
-loader = OSVDataLoader()
+loader = OSVDataLoader(
+    ecosystems=['GIT'],
+    filters=LoaderFilters(
+        database_filter=DatabaseFilter(
+            prefix_is_cve=True
+        ),
+        references_filter=ReferencesFilter(
+            has_fix=True
+        )
+    )
+)
 
 loader()
 
-cve_ids_osv = loader.get_osv_with_cve_ids(has_fix_refs=True)
-
-print(f"{len(cve_ids_osv)} CVE IDs with Fix URLs in {len(loader)} records")
+print(f"{len(loader)} records loaded")
