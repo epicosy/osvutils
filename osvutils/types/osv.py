@@ -14,7 +14,7 @@ from osvutils.utils.misc import get_alias_type, is_cve_id, get_cve_match
 class Credit(BaseModel):
     name: str
     contact: Optional[List[str]] = None
-    type: str
+    type: Optional[str] = None
 
 
 # Main schema model: version 1.6.0
@@ -40,6 +40,14 @@ class OSV(BaseModel):
     )
     credits: Optional[List[Credit]] = None
     database_specific: Optional[dict] = None  # TODO: to be extended for each database
+
+    @field_validator('references', mode='before')
+    def parse_references(cls, values):
+        if not values:
+            return []
+
+        # filter out References without url key
+        return [ref for ref in values if ref.get('url')]
 
     @field_validator('aliases', mode='before')
     def parse_aliases(cls, v: List[str]):

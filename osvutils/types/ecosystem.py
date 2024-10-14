@@ -41,6 +41,7 @@ class EcosystemType(Enum):
     SUSE = 'SUSE'
     SWIFTURL = 'SwiftURL'
     UBUNTU = 'Ubuntu'
+    WOLFI = 'Wolfi'
 
 
 # Ecosystem model to store ecosystem and version separately

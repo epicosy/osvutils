@@ -5,7 +5,6 @@ from osvutils.core.filters.affected_packages import AffectedPackagesFilter
 
 
 loader = OSVDataLoader(
-    ecosystems=['Debian'],
     filters=LoaderFilters(
         database_filter=DatabaseFilter(
             prefix_is_cve=True

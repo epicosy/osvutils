@@ -2,6 +2,6 @@
 from osvutils.core.collector import OSVDataCollector
 
 collector = OSVDataCollector(verbose=True)
-count = collector(['CRAN'])
+count = collector(['Wolfi'])
 
 print(f"Total records collected: {count}")
