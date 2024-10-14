@@ -43,6 +43,9 @@ class Range(BaseModel):
 
         return values
 
+    def get_fixed_events(self) -> List[Fixed]:
+        return [e for e in self.events if isinstance(e, Fixed)]
+
 
 class GitRepo(BaseModel):
     owner: str
