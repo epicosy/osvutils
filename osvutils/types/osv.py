@@ -114,3 +114,5 @@ class OSV(BaseModel):
     def get_scores(self):
         if self.severity:
             return [s.score for s in self.severity]
+
+        return []
