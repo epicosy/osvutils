@@ -110,3 +110,7 @@ class OSV(BaseModel):
                 ranges.extend(affected.get_git_ranges())
 
         return ranges
+
+    def get_scores(self):
+        if self.severity:
+            return [s.score for s in self.severity]
