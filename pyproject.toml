@@ -8,7 +8,7 @@ homepage = "https://github.com/epicosy/osvutils"
 
 [project]
 name="osv-utils"
-version = "0.3.0"
+version = "0.3.1"
 description = "A package for parsing, representing, and filtering OSV data."
 readme = "README.md"
 authors = [
@@ -26,7 +26,8 @@ classifiers = [
 dependencies = [
     "tqdm~=4.66.4",
     "pydantic~=2.9.2",
-    "google-cloud-storage~=2.18.2"
+    "google-cloud-storage~=2.18.2",
+    "giturlparse~=0.12.0"
 ]
 
 [project.optional-dependencies]

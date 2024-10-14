@@ -1,7 +1,7 @@
 from enum import Enum
+from giturlparse import parse
 from typing import List, Optional
 from pydantic import BaseModel, model_validator
-
 
 from osvutils.types.event import Event, event_mapping, Fixed, LastAffected
 
@@ -44,14 +44,33 @@ class Range(BaseModel):
         return values
 
 
+class GitRepo(BaseModel):
+    owner: str
+    name: str
+
+    def __str__(self):
+        return f"{self.owner}/{self.name}"
+
+
 class GitRange(Range):
-    repo: str
+    repo: GitRepo
 
     # Conditional logic for GIT type requiring repo
     @model_validator(mode='before')
-    def check_git_repo(cls, values):
-        if values.get('type') == 'GIT' and not values.get('repo'):
-            raise ValueError("GIT ranges require a 'repo' field.")
+    def validate_git_repo(cls, values):
+        if values.get('type') == 'GIT':
+            if not values.get('repo'):
+                raise ValueError("GIT ranges require a 'repo' field.")
+
+            # Parse the repo and check validity
+            parsed_repo = parse(values['repo'])
+
+            if not parsed_repo.valid:
+                raise ValueError(f"Invalid repository url: {values['repo']}")
+
+            # Replace the original 'repo' data with the parsed object
+            values['repo'] = GitRepo(owner=parsed_repo.owner, name=parsed_repo.repo)
+
         return values
 
     # TODO: the schema indicates that 'fixed' and 'last_affected' are required and mutually exclusive but some entries
