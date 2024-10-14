@@ -6,6 +6,7 @@ from osvutils.types.alias import Alias
 from osvutils.types.severity import Severity
 from osvutils.types.reference import Reference
 from osvutils.types.affected import Affected
+from osvutils.types.range import GitRange
 
 from osvutils.utils.misc import get_alias_type, is_cve_id, get_cve_match
 
@@ -100,3 +101,12 @@ class OSV(BaseModel):
             return any(affected.has_git_ranges() for affected in self.affected)
 
         return False
+
+    def get_git_ranges(self) -> List[GitRange]:
+        ranges = []
+
+        if self.has_affected():
+            for affected in self.affected:
+                ranges.extend(affected.get_git_ranges())
+
+        return ranges
