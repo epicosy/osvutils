@@ -1,5 +1,3 @@
-import re
-
 from typing import Optional
 from pydantic import BaseModel, ValidationError, field_validator
 
@@ -20,9 +18,11 @@ class Package(BaseModel):
         """
         if isinstance(v, str):
             # Split input like 'AlmaLinux:8' into ('AlmaLinux', '8')
-            match = re.match(r'(\w+):(\w+)', v)
-            if match:
-                ecosystem_name, version = match.groups()
+            split = v.split(':', 1)
+
+            if len(split) > 1:
+                ecosystem_name, version = split
+
                 try:
                     return {'ecosystem': EcosystemType(ecosystem_name), 'version': version}
                 except ValueError:

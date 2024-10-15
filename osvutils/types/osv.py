@@ -7,6 +7,7 @@ from osvutils.types.severity import Severity
 from osvutils.types.reference import Reference
 from osvutils.types.affected import Affected
 from osvutils.types.range import GitRange
+from osvutils.types.event import Fixed
 
 from osvutils.utils.misc import get_alias_type, is_cve_id, get_cve_match
 
@@ -110,6 +111,16 @@ class OSV(BaseModel):
                 ranges.extend(affected.get_git_ranges())
 
         return ranges
+
+    def get_git_fixes(self) -> List[Fixed]:
+        fixes = []
+
+        if self.has_affected():
+            for affected in self.affected:
+                for git_range in affected.get_git_ranges():
+                    fixes.extend(git_range.get_fixed_events())
+
+        return fixes
 
     def get_scores(self):
         if self.severity:
