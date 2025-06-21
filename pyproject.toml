@@ -8,7 +8,7 @@ homepage = "https://github.com/epicosy/osvutils"
 
 [project]
 name="osv-utils"
-version = "0.3.8"
+version = "0.3.9"
 description = "A package for parsing, representing, and filtering OSV data."
 readme = "README.md"
 authors = [

@@ -19,6 +19,6 @@ class AffectedPackagesFilter(BaseFilter):
     def check(self, entry: OSV) -> FilterCheck:
         filter_check = FilterCheck()
         filter_check.update('has_git_ranges', OptionCheck(self.has_git_ranges, entry.has_git_ranges()))
-        filter_check.update('has_git_fixes', OptionCheck(self.has_git_fixes, len(entry.get_git_fixes()) > 1))
+        filter_check.update('has_git_fixes', OptionCheck(self.has_git_fixes, len(entry.get_git_fixes()) > 0))
 
         return filter_check
