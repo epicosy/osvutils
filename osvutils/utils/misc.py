@@ -52,9 +52,11 @@ def get_oss_fuzz_issue_id(url: Union[str, AnyUrl]) -> Tuple[str, str]:
             redirect_url = match.group(1)
             print(f"Extracted redirect URL: {redirect_url}")
             return redirect_url, redirect_url.split("/")[-1]
-        else:
+        elif url_obj.query:
             print("Redirect URL not found in response. Fallback to default issue id.")
             return url, url_obj.query.split("=")[-1]
+        else:
+            raise ValueError("Could not extract redirect URL nor the issue ID.")
 
     elif url_obj.host == "issues.oss-fuzz.com":
         return url, url_obj.query.split("/")[-1]
