@@ -66,6 +66,8 @@ class GitRange(Range):
                 raise ValueError("GIT ranges require a 'repo' field.")
 
             # Parse the repo and check validity
+            # TODO: make sure url like git://git.code.sf.net/p/matio/matio get parsed correctly
+            # TODO: address url links like https://invent.kde.org/frameworks/kimageformats.git
             parsed_repo = parse(values['repo'])
 
             if not parsed_repo.valid:

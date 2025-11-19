@@ -5,7 +5,7 @@ import requests
 from pydantic import AnyUrl
 
 from pathlib import Path
-from typing import List, Union, Tuple
+from typing import List, Union, Tuple, Optional
 
 from osvutils.types.alias import AliasType
 from osvutils.types.ecosystem import EcosystemType
@@ -59,7 +59,12 @@ def get_oss_fuzz_issue_id(url: Union[str, AnyUrl]) -> Tuple[str, str]:
             raise ValueError("Could not extract redirect URL nor the issue ID.")
 
     elif url_obj.host == "issues.oss-fuzz.com":
-        return url, url_obj.query.split("/")[-1]
+        if url_obj.query:
+            return url, url_obj.query.split("/")[-1]
+        elif url_obj.path:
+            return url, url_obj.path.split("/")[-1]
+        else:
+            raise ValueError(f"Could not extract issue ID from URL: {url}")
     else:
         raise Exception(f"Unknown host: {url_obj.host}")
 
@@ -110,6 +115,6 @@ def is_cve_id(value: str) -> bool:
     return re.search(CVE_REGEX, value) is not None
 
 
-def get_cve_match(value: str) -> str | None:
+def get_cve_match(value: str) -> Optional[str]:
     match = re.search(CVE_REGEX, value)
     return match.group() if match else None
